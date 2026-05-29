@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador - Motor RPMC-741</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 { color: #38bdf8; font-size: 24px; margin-bottom: 20px; }
+        input[type="number"] {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #475569;
+            border-radius: 6px;
+            background-color: #0f172a;
+            color: #fff;
+            font-size: 16px;
+        }
+        button {
+            background-color: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+        button:hover { background-color: #0ea5e9; }
+        .resultado-box {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #0f172a;
+            border-radius: 6px;
+            border-left: 4px solid #38bdf8;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Simulador RPMC-741</h1>
+    <p>Introduce el valor de tiempo <span style="color:#38bdf8; font-weight:bold;">t</span>:</p>
+    
+    <input type="number" id="tiempoInput" placeholder="Ej. 13" min="0">
+    <br>
+    <button onclick="procesarCalculo()">Calcular Engranajes</button>
+
+    <div id="resultadoBox" class="resultado-box">
+        <p style="margin: 0; font-size: 14px; color: #94a3b8;">Resultado del Servidor:</p>
+        <h2 id="resultadoTexto" style="margin: 5px 0 0 0; color: #34d399;">0</h2>
+    </div>
+</div>
+
+<script>
+    async function procesarCalculo() {
+        const tiempoVal = document.getElementById("tiempoInput").value;
+        const box = document.getElementById("resultadoBox");
+        const texto = document.getElementById("resultadoTexto");
+
+        if (!tiempoVal) {
+            alert("Por favor, ingresa un valor de tiempo.");
+            return;
+        }
+
+        texto.style.color = "#38bdf8";
+        texto.innerText = "Procesando de forma segura...";
+        box.style.display = "block";
+
+        // Apunta directamente a tu ruta GET en Render pasando la variable 't'
+        const URL_DINAMICA = `https://onrender.com{tiempoVal}`; 
+
+        try {
+            const respuesta = await fetch(URL_DINAMICA, {
+                method: "GET"
+            });
+
+            if (!respuesta.ok) throw new Error("Error en la respuesta del servidor");
+
+            const datos = await respuesta.json();
+            texto.style.color = "#34d399";
+            
+            // Muestra la respuesta matemática de tus vectores de engranajes
+            texto.innerText = typeof datos === 'object' ? JSON.stringify(datos) : datos;
+
+        } catch (error) {
+            texto.style.color = "#f87171";
+            texto.innerText = "Error de conexión o servidor dormido";
+            console.error(error);
+        }
+    }
+</script>
+
+</body>
+</html>
